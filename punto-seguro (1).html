@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Punto Seguro – Red de Apoyo Inmediato</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f4f4f4;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0;
+  }
+
+  .screen { display: none; width: 100%; max-width: 430px; min-height: 100vh; background: #fff; flex-direction: column; }
+  .screen.active { display: flex; }
+
+  /* NAV */
+  .nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px;
+    background: #1a1a2e;
+  }
+  .logo { display: flex; align-items: center; gap: 8px; }
+  .logo-icon {
+    width: 36px; height: 36px; background: #FF6B1A; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-icon svg { width: 20px; height: 20px; fill: white; }
+  .logo-text { display: flex; flex-direction: column; line-height: 1.1; }
+  .logo-text span:first-child { color: white; font-weight: 700; font-size: 13px; letter-spacing: 1px; }
+  .logo-text span:last-child { color: #FF6B1A; font-weight: 700; font-size: 13px; letter-spacing: 1px; }
+  .nav-menu { display: flex; flex-direction: column; gap: 4px; cursor: pointer; }
+  .nav-menu span { display: block; width: 22px; height: 2px; background: white; border-radius: 2px; }
+
+  /* HERO */
+  .hero {
+    background: #1a1a2e;
+    padding: 32px 24px 40px;
+    flex: 0;
+  }
+  .hero h1 {
+    color: white; font-size: 32px; font-weight: 900; line-height: 1.1;
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  .hero h1 span { color: #FF6B1A; display: block; }
+  .hero p { color: #aaa; font-size: 14px; line-height: 1.6; margin-top: 14px; }
+
+  .hero-img {
+    margin: 24px auto 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .hero-img svg { width: 160px; height: 120px; }
+
+  .btn-primary {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: #FF6B1A; color: white;
+    border: none; border-radius: 8px;
+    padding: 16px 24px; font-size: 15px; font-weight: 700;
+    cursor: pointer; width: 100%; margin-top: 12px;
+    letter-spacing: 0.3px; text-transform: uppercase;
+    transition: background 0.2s;
+  }
+  .btn-primary:hover { background: #e55a0e; }
+
+  .btn-secondary {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: transparent; color: #1a1a2e;
+    border: 2px solid #1a1a2e; border-radius: 8px;
+    padding: 14px 24px; font-size: 15px; font-weight: 700;
+    cursor: pointer; width: 100%; margin-top: 10px;
+    letter-spacing: 0.3px; text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { background: #1a1a2e; color: white; }
+
+  .content { padding: 28px 24px; flex: 1; }
+
+  /* SCREEN 2 – Explicación */
+  .feature-list { list-style: none; display: flex; flex-direction: column; gap: 20px; }
+  .feature-item { display: flex; align-items: flex-start; gap: 14px; }
+  .feature-icon {
+    width: 44px; height: 44px; border-radius: 50%; background: #1a1a2e;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .feature-icon svg { width: 22px; height: 22px; }
+  .feature-text strong { display: block; font-size: 15px; color: #1a1a2e; font-weight: 700; margin-bottom: 2px; }
+  .feature-text span { font-size: 13px; color: #666; line-height: 1.5; }
+
+  .highlight-box {
+    background: #FFF3EC; border-left: 4px solid #FF6B1A;
+    border-radius: 8px; padding: 16px 18px; margin-top: 24px;
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .highlight-box svg { width: 24px; height: 24px; flex-shrink: 0; margin-top: 2px; }
+  .highlight-box p { font-size: 14px; color: #333; line-height: 1.6; }
+  .highlight-box strong { color: #FF6B1A; }
+
+  /* SCREEN 3 – Formulario */
+  .section-label {
+    font-size: 11px; font-weight: 700; color: #FF6B1A;
+    text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px;
+  }
+  .screen-title { font-size: 22px; font-weight: 900; color: #1a1a2e; margin-bottom: 4px; }
+  .screen-subtitle { font-size: 13px; color: #666; margin-bottom: 28px; line-height: 1.5; }
+
+  .question { margin-bottom: 24px; }
+  .question-label { font-size: 14px; font-weight: 600; color: #1a1a2e; margin-bottom: 12px; line-height: 1.4; }
+
+  .btn-group { display: flex; gap: 10px; }
+  .btn-choice {
+    flex: 1; padding: 13px 10px; border-radius: 8px;
+    border: 2px solid #ddd; background: white;
+    font-size: 14px; font-weight: 600; color: #555;
+    cursor: pointer; transition: all 0.2s; text-align: center;
+  }
+  .btn-choice.selected {
+    background: #FF6B1A; border-color: #FF6B1A; color: white;
+  }
+  .btn-choice:not(.selected):hover { border-color: #FF6B1A; color: #FF6B1A; }
+
+  .input-email {
+    width: 100%; padding: 14px 16px;
+    border: 2px solid #ddd; border-radius: 8px;
+    font-size: 14px; color: #333; outline: none;
+    transition: border 0.2s;
+  }
+  .input-email:focus { border-color: #FF6B1A; }
+  .input-email::placeholder { color: #aaa; }
+
+  /* SCREEN 4 – Gracias */
+  .thanks-icon {
+    width: 80px; height: 80px; border-radius: 50%; background: #e8f5e9;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+  }
+  .thanks-icon svg { width: 44px; height: 44px; }
+  .thanks-title { font-size: 24px; font-weight: 900; color: #1a1a2e; text-align: center; line-height: 1.2; margin-bottom: 12px; }
+  .thanks-sub { font-size: 14px; color: #666; text-align: center; line-height: 1.6; }
+
+  .share-box {
+    background: #f7f7f7; border-radius: 12px; padding: 18px;
+    margin-top: 24px; display: flex; align-items: center; gap: 14px;
+  }
+  .share-box svg { width: 28px; height: 28px; flex-shrink: 0; }
+  .share-box p { font-size: 13px; color: #444; line-height: 1.5; font-weight: 500; }
+
+  .social-row { display: flex; justify-content: center; gap: 16px; margin-top: 20px; }
+  .social-btn {
+    width: 44px; height: 44px; border-radius: 50%; background: #1a1a2e;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    transition: background 0.2s; border: none;
+  }
+  .social-btn:hover { background: #FF6B1A; }
+  .social-btn svg { width: 20px; height: 20px; fill: white; }
+
+  /* SCREEN 5 – Mapa */
+  .map-placeholder {
+    width: 100%; height: 200px; background: #e8eaf0;
+    border-radius: 12px; overflow: hidden; position: relative;
+    margin-bottom: 16px;
+  }
+  .map-placeholder img { width: 100%; height: 100%; object-fit: cover; }
+  .map-pin {
+    position: absolute; width: 28px; height: 28px;
+    background: #FF6B1A; border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg); border: 3px solid white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+  .map-pin.p1 { top: 40%; left: 30%; }
+  .map-pin.p2 { top: 55%; left: 50%; }
+  .map-pin.p3 { top: 30%; left: 65%; background: #1a1a2e; }
+
+  .next-locations { margin-top: 4px; }
+  .next-title { font-size: 13px; font-weight: 700; color: #1a1a2e; margin-bottom: 10px; }
+  .location-icons { display: flex; gap: 10px; }
+  .loc-icon {
+    width: 44px; height: 44px; background: #f4f4f4; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .loc-icon svg { width: 22px; height: 22px; }
+
+  .stats-row {
+    display: flex; background: #1a1a2e; border-radius: 12px;
+    margin-top: 16px; overflow: hidden;
+  }
+  .stat-item { flex: 1; padding: 16px 10px; text-align: center; }
+  .stat-item:not(:last-child) { border-right: 1px solid rgba(255,255,255,0.1); }
+  .stat-num { font-size: 22px; font-weight: 900; color: #FF6B1A; display: block; }
+  .stat-label { font-size: 10px; color: #aaa; line-height: 1.3; margin-top: 2px; display: block; }
+
+  /* FOOTER */
+  .footer {
+    padding: 12px 20px; background: white; border-top: 1px solid #eee;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    font-size: 12px; color: #888; margin-top: auto;
+  }
+  .footer svg { width: 14px; height: 14px; }
+
+  .progress-bar {
+    height: 3px; background: #eee; width: 100%;
+    position: relative;
+  }
+  .progress-fill {
+    height: 3px; background: #FF6B1A;
+    transition: width 0.4s ease;
+  }
+</style>
+</head>
+<body>
+
+<!-- SCREEN 1: Landing -->
+<div class="screen active" id="s1">
+  <div class="nav">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+      </div>
+      <div class="logo-text">
+        <span>PUNTO</span>
+        <span>SEGURO</span>
+      </div>
+    </div>
+    <div class="nav-menu">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <div class="hero">
+    <h1>RED DE APOYO<br>INMEDIATO<span>PARA VÍCTIMAS DE ROBO</span></h1>
+    <p>Estamos construyendo una red de quioscos y locales adheridos que entregan conectividad y ayuda inmediata en situaciones de emergencia.</p>
+    <div class="hero-img">
+      <svg viewBox="0 0 200 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="40" y="50" width="120" height="70" rx="6" fill="#e8eaf0"/>
+        <rect x="55" y="30" width="90" height="90" rx="6" fill="#d0d3df"/>
+        <rect x="70" y="20" width="60" height="90" rx="6" fill="#bdc1d0"/>
+        <rect x="80" y="40" width="40" height="25" rx="3" fill="#fff" opacity="0.5"/>
+        <rect x="85" y="80" width="30" height="20" rx="2" fill="#fff" opacity="0.4"/>
+        <circle cx="100" cy="95" r="20" fill="#1a1a2e" opacity="0.85"/>
+        <path d="M100 82c-7.2 0-13 5.8-13 13 0 9.75 13 24 13 24s13-14.25 13-24c0-7.2-5.8-13-13-13zm0 17.5c-2.5 0-4.5-2-4.5-4.5s2-4.5 4.5-4.5 4.5 2 4.5 4.5-2 4.5-4.5 4.5z" fill="#FF6B1A"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="content">
+    <button class="btn-primary" onclick="go('s2')">
+      Quiero conocer la iniciativa
+      <svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+    </button>
+    <button class="btn-secondary" onclick="go('s5')">
+      Ver puntos seguros cercanos
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+    </button>
+  </div>
+
+  <div class="footer">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    Tu información está segura con nosotros.
+  </div>
+</div>
+
+<!-- SCREEN 2: Explicación -->
+<div class="screen" id="s2">
+  <div class="nav">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+      </div>
+      <div class="logo-text"><span>PUNTO</span><span>SEGURO</span></div>
+    </div>
+    <div class="nav-menu"><span></span><span></span><span></span></div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" style="width:25%"></div></div>
+
+  <div class="content">
+    <h2 style="font-size:22px;font-weight:900;color:#1a1a2e;margin-bottom:24px;">¿QUÉ ES<br>PUNTO SEGURO?</h2>
+
+    <ul class="feature-list">
+      <li class="feature-item">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FF6B1A" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><circle cx="12" cy="12" r="1" fill="#FF6B1A"/></svg>
+        </div>
+        <div class="feature-text">
+          <strong>Conectividad inmediata</strong>
+          <span>Te prestamos una Tablet segura para que puedas comunicarte.</span>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FF6B1A" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div class="feature-text">
+          <strong>Bloqueo de cuentas</strong>
+          <span>Acceso directo a bancos y compañías para bloquear tus tarjetas y líneas.</span>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FF6B1A" stroke-width="2"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><path d="M9.1 9a3 3 0 0 1 5.82 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div class="feature-text">
+          <strong>Apoyo para volver seguro</strong>
+          <span>Te ayudamos a obtener movilidad para que llegues a tu destino.</span>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FF6B1A" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="feature-text">
+          <strong>Red de apoyo comunitario</strong>
+          <span>Locales aliados capacitados para ayudarte.</span>
+        </div>
+      </li>
+    </ul>
+
+    <div class="highlight-box">
+      <svg viewBox="0 0 24 24" fill="#FF6B1A"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      <p><strong>No estás solo.</strong> Estamos cerca para ayudarte en los primeros minutos después de un robo.</p>
+    </div>
+
+    <button class="btn-primary" style="margin-top:28px;" onclick="go('s3')">
+      Participar ahora
+      <svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+    </button>
+  </div>
+
+  <div class="footer">
+    <span>Juntos hacemos una comunidad más segura.</span>
+  </div>
+</div>
+
+<!-- SCREEN 3: Formulario -->
+<div class="screen" id="s3">
+  <div class="nav">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+      </div>
+      <div class="logo-text"><span>PUNTO</span><span>SEGURO</span></div>
+    </div>
+    <div class="nav-menu"><span></span><span></span><span></span></div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" style="width:65%"></div></div>
+
+  <div class="content">
+    <div class="section-label">Tu opinión importa</div>
+    <h2 class="screen-title">TU OPINIÓN NOS AYUDA</h2>
+    <p class="screen-subtitle">Responde estas 4 preguntas rápidas para seguir construyendo esta red.</p>
+
+    <div class="question">
+      <div class="question-label">1. ¿Crees que esta iniciativa sería útil?</div>
+      <div class="btn-group">
+        <button class="btn-choice" onclick="select(this,'q1')">✓ Sí</button>
+        <button class="btn-choice" onclick="select(this,'q1')">No</button>
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="question-label">2. ¿Te sentirías más seguro sabiendo que existen puntos de ayuda cercanos?</div>
+      <div class="btn-group">
+        <button class="btn-choice" onclick="select(this,'q2')">Sí</button>
+        <button class="btn-choice" onclick="select(this,'q2')">No</button>
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="question-label">3. ¿Has vivido o presenciado un robo en el sector?</div>
+      <div class="btn-group">
+        <button class="btn-choice" onclick="select(this,'q3')">Sí</button>
+        <button class="btn-choice" onclick="select(this,'q3')">No</button>
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="question-label">4. ¿Te gustaría conocer cuando esta red esté disponible?</div>
+      <input type="email" class="input-email" placeholder="Tu correo electrónico" id="emailInput">
+    </div>
+
+    <button class="btn-primary" onclick="submit()">
+      Enviar respuestas
+      <svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+    </button>
+  </div>
+
+  <div class="footer">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    Tu información está protegida.
+  </div>
+</div>
+
+<!-- SCREEN 4: Gracias -->
+<div class="screen" id="s4">
+  <div class="nav">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+      </div>
+      <div class="logo-text"><span>PUNTO</span><span>SEGURO</span></div>
+    </div>
+    <div class="nav-menu"><span></span><span></span><span></span></div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+
+  <div class="content" style="display:flex;flex-direction:column;align-items:center;padding-top:48px;">
+    <div class="thanks-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h2 class="thanks-title">¡Gracias por ser parte<br>de Punto Seguro!</h2>
+    <p class="thanks-sub" style="max-width:280px;">Tu opinión nos ayuda a construir una red de apoyo real para nuestra comunidad.</p>
+
+    <div class="share-box" style="width:100%;max-width:340px;">
+      <svg viewBox="0 0 24 24" fill="#FF6B1A"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+      <p>Comparte esta iniciativa con tus amigos y familiares.</p>
+    </div>
+
+    <p style="font-size:13px;color:#888;margin-top:18px;">Síguenos para más novedades</p>
+    <div class="social-row">
+      <button class="social-btn" title="Instagram">
+        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+      </button>
+      <button class="social-btn" title="WhatsApp">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+      </button>
+      <button class="social-btn" title="TikTok">
+        <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.28 8.28 0 0 0 4.84 1.55V6.8a4.85 4.85 0 0 1-1.07-.11z"/></svg>
+      </button>
+    </div>
+
+    <button class="btn-primary" style="margin-top:28px;max-width:340px;" onclick="go('s5')">
+      Ver puntos seguros cercanos
+      <svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+    </button>
+  </div>
+
+  <div class="footer">
+    <svg viewBox="0 0 24 24" fill="#FF6B1A"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+    Juntos hacemos una comunidad más segura.
+  </div>
+</div>
+
+<!-- SCREEN 5: Mapa -->
+<div class="screen" id="s5">
+  <div class="nav">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+      </div>
+      <div class="logo-text"><span>PUNTO</span><span>SEGURO</span></div>
+    </div>
+    <div class="nav-menu"><span></span><span></span><span></span></div>
+  </div>
+
+  <div class="content">
+    <h2 style="font-size:18px;font-weight:900;color:#1a1a2e;margin-bottom:14px;">PUNTOS SEGUROS CERCANOS</h2>
+
+    <!-- Mapa SVG simulado -->
+    <div class="map-placeholder" style="position:relative;">
+      <svg width="100%" height="200" viewBox="0 0 382 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="382" height="200" fill="#e8edf0"/>
+        <!-- Calles -->
+        <line x1="0" y1="80" x2="382" y2="80" stroke="#fff" stroke-width="12"/>
+        <line x1="0" y1="130" x2="382" y2="130" stroke="#fff" stroke-width="8"/>
+        <line x1="80" y1="0" x2="80" y2="200" stroke="#fff" stroke-width="8"/>
+        <line x1="200" y1="0" x2="200" y2="200" stroke="#fff" stroke-width="12"/>
+        <line x1="310" y1="0" x2="310" y2="200" stroke="#fff" stroke-width="8"/>
+        <!-- Manzanas -->
+        <rect x="85" y="85" width="110" height="40" rx="4" fill="#d0d7de"/>
+        <rect x="205" y="85" width="100" height="40" rx="4" fill="#d0d7de"/>
+        <rect x="85" y="135" width="110" height="60" rx="4" fill="#d0d7de"/>
+        <!-- Labels calles -->
+        <text x="140" y="74" font-size="9" fill="#888" text-anchor="middle" font-family="sans-serif">San Alberto Hurtado</text>
+        <text x="200" y="125" font-size="9" fill="#888" text-anchor="middle" font-family="sans-serif">Ecuador</text>
+        <!-- Metro -->
+        <circle cx="95" cy="160" r="12" fill="#e74c3c"/>
+        <text x="95" y="163" font-size="9" fill="white" text-anchor="middle" font-family="sans-serif" font-weight="bold">M</text>
+        <text x="120" y="175" font-size="8" fill="#555" font-family="sans-serif">Estación Central</text>
+        <!-- Pins -->
+        <circle cx="140" cy="60" r="10" fill="#FF6B1A" stroke="white" stroke-width="2"/>
+        <text x="140" y="64" font-size="10" fill="white" text-anchor="middle" font-family="sans-serif" font-weight="bold">♥</text>
+        <circle cx="250" cy="100" r="10" fill="#FF6B1A" stroke="white" stroke-width="2"/>
+        <text x="250" y="104" font-size="10" fill="white" text-anchor="middle" font-family="sans-serif" font-weight="bold">♥</text>
+        <circle cx="200" cy="150" r="10" fill="#1a1a2e" stroke="white" stroke-width="2"/>
+        <text x="200" y="154" font-size="10" fill="#FF6B1A" text-anchor="middle" font-family="sans-serif" font-weight="bold">★</text>
+      </svg>
+    </div>
+
+    <div class="next-locations" style="margin-top:16px;">
+      <p class="next-title">PRÓXIMOS LOCALES ADHERIDOS</p>
+      <p style="font-size:12px;color:#888;margin-bottom:10px;">Estamos sumando más puntos cada semana.</p>
+      <div class="location-icons">
+        <div class="loc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#FF6B1A" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <div class="loc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#1a1a2e" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <div class="loc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#FF6B1A" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <div class="loc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#1a1a2e" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <div class="loc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-item">
+        <span class="stat-num">85+</span>
+        <span class="stat-label">Personas que apoyan esta iniciativa</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">12</span>
+        <span class="stat-label">Locales adheridos y en proceso</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">1</span>
+        <span class="stat-label">Comunidad más segura</span>
+      </div>
+    </div>
+
+    <button class="btn-primary" style="margin-top:20px;" onclick="go('s1')">
+      Volver al inicio
+    </button>
+  </div>
+
+  <div class="footer">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/></svg>
+    Red de apoyo cuando más lo necesitas.
+  </div>
+</div>
+
+<script>
+const FORM_ID = '1FAIpQLSdBQlOIvogY7FLIaVWY-l5rkoHBvuJsUXiGnpj9jZCFq_47mw';
+const ENTRY = {
+  q1: 'entry.1910326144',
+  q2: 'entry.760505801',
+  q3: 'entry.1960920542',
+  q4: 'entry.1225483821'
+};
+
+const answers = { q1: '', q2: '', q3: '', q4: '' };
+
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function select(btn, group) {
+  const parent = btn.closest('.btn-group');
+  parent.querySelectorAll('.btn-choice').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  answers[group] = btn.textContent.trim();
+}
+
+function submit() {
+  const email = document.getElementById('emailInput').value.trim();
+
+  let iframe = document.getElementById('hidden-iframe');
+  if (!iframe) {
+    iframe = document.createElement('iframe');
+    iframe.id = 'hidden-iframe';
+    iframe.name = 'hidden-iframe';
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+  }
+
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = `https://docs.google.com/forms/d/e/${FORM_ID}/formResponse`;
+  form.target = 'hidden-iframe';
+
+  const fields = {};
+  fields[ENTRY.q1] = answers.q1 || 'Sin respuesta';
+  fields[ENTRY.q2] = answers.q2 || 'Sin respuesta';
+  fields[ENTRY.q3] = answers.q3 || 'Sin respuesta';
+  fields[ENTRY.q4] = answers.q4 || 'Sin respuesta';
+  if (email) fields['emailAddress'] = email;
+
+  Object.entries(fields).forEach(function(pair) {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = pair[0];
+    input.value = pair[1];
+    form.appendChild(input);
+  });
+
+  document.body.appendChild(form);
+  form.submit();
+  setTimeout(function() { document.body.removeChild(form); }, 1000);
+
+  go('s4');
+}
+</script>
+</body>
+</html>
